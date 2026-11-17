@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4f5f1">
+  <title>みえる？ — おうち視力チェック</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="みえる？ ホーム"><span class="brand-mark">●</span><span>みえる？</span></a>
+      <span class="top-note">おうち視力チェック</span>
+    </header>
+
+    <section id="intro" class="screen active">
+      <div class="hero-copy">
+        <span class="eyebrow"><span class="eyebrow-dot"></span> かんたんセルフチェック</span>
+        <h1>いまの視力、<br>ためしてみよう。</h1>
+        <p>ランドルト環の切れ目を見て、向きを選ぶだけ。<br class="desktop-only">準備ができたら、約2分でチェックできます。</p>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div>
+        <div class="art-ring"><span></span></div>
+        <div class="art-label label-top">C</div><div class="art-label label-side">◌</div>
+        <div class="art-dot dot-one"></div><div class="art-dot dot-two"></div>
+      </div>
+      <div class="intro-lower">
+        <div class="setup-card">
+          <div class="setup-icon">↔</div>
+          <div><strong>スマホとの距離</strong><span>画面から <b>250 cm</b> 離れて測定します</span></div>
+          <span class="setup-arrow">›</span>
+        </div>
+        <button id="startBtn" class="primary-btn">チェックをはじめる <span>→</span></button>
+        <p class="fineprint">このチェックは医療診断ではありません。気になる症状がある場合は眼科を受診してください。</p>
+      </div>
+    </section>
+
+    <section id="calibrate" class="screen">
+      <div class="step-head"><span class="step-count">準備 01 / 02</span><span class="step-line"><i style="width:50%"></i></span></div>
+      <div class="content-narrow">
+        <span class="eyebrow">画面の大きさを合わせます</span>
+        <h2>10円玉を重ねて<br>サイズを調整</h2>
+        <p class="body-copy">実物の10円玉を画面に置き、円の直径が同じになるようにスライダーを動かしてください。</p>
+        <div class="calibration-stage">
+          <div class="coin-outline"><span>10円玉</span><b>直径 23.5 mm</b></div>
+          <div class="measure-caption"><i></i> 円を実物の10円玉に合わせる</div>
+        </div>
+        <label class="range-label" for="calibration"><span>円の直径</span><span id="scaleReadout">標準</span></label>
+        <input id="calibration" type="range" min="80" max="320" value="150" aria-label="10円玉の円の直径">
+        <div class="range-ends"><span>小さく</span><span>大きく</span></div>
+        <div class="tip-box"><span class="tip-icon">i</span><span>実物の10円玉（直径約23.5mm）を画面に置いて、円の大きさを合わせてください。</span></div>
+        <button id="calibratedBtn" class="primary-btn">サイズを合わせた <span>→</span></button>
+        <button class="text-btn back-btn" data-back="intro">戻る</button>
+      </div>
+    </section>
+
+    <section id="ready" class="screen">
+      <div class="step-head"><span class="step-count">準備 02 / 02</span><span class="step-line"><i style="width:100%"></i></span></div>
+      <div class="content-narrow ready-content">
+        <span class="eyebrow">チェックの準備</span>
+        <h2>見やすい場所で<br>画面から離れて</h2>
+        <div class="distance-card"><span class="distance-icon">↔</span><div><small>スマホとの距離</small><strong>250 <small>cm</small></strong></div><span class="distance-edit">目安</span></div>
+        <ul class="instruction-list">
+          <li><span>01</span><div><b>スマホを固定</b><small>目の高さに立てかけ、画面をまっすぐ見ます。</small></div></li>
+          <li><span>02</span><div><b>片目ずつチェック</b><small>片目を手で隠して、もう片方で見てください。</small></div></li>
+          <li><span>03</span><div><b>切れ目の向きを選ぶ</b><small>わからないときは、勘で選ばず「わからない」を。</small></div></li>
+        </ul>
+        <button id="beginTestBtn" class="primary-btn">準備できました <span>→</span></button>
+        <button class="text-btn back-btn" data-back="calibrate">戻る</button>
+      </div>
+    </section>
+
+
+    <section id="test" class="screen test-screen">
+      <div class="test-top"><button id="quitBtn" class="icon-btn" aria-label="中断する">×</button><div class="test-meta"><span id="eyeLabel">右目をチェック中</span><span id="progressLabel">問題 1 / 3</span></div><div class="test-progress"><i id="progressBar"></i></div></div>
+      <div class="test-prompt"><span class="eyebrow">切れ目はどちら？</span><p>ランドルト環の切れ目の向きを選んでください</p></div>
+      <div id="ringArea" class="ring-area"><svg id="optotype" viewBox="0 0 100 100" role="img" aria-label="向きを選ぶランドルト環"></svg></div>
+      <div class="answer-panel">
+        <div class="answer-grid">
+          <button class="answer-btn" data-dir="up-left" aria-label="左上">↖</button>
+          <button class="answer-btn" data-dir="up" aria-label="上">↑</button>
+          <button class="answer-btn" data-dir="up-right" aria-label="右上">↗</button>
+          <button class="answer-btn" data-dir="left" aria-label="左">←</button>
+          <span class="answer-spacer" aria-hidden="true"></span>
+          <button class="answer-btn" data-dir="right" aria-label="右">→</button>
+          <button class="answer-btn" data-dir="down-left" aria-label="左下">↙</button>
+          <button class="answer-btn" data-dir="down" aria-label="下">↓</button>
+          <button class="answer-btn" data-dir="down-right" aria-label="右下">↘</button>
+        </div>
+        <button id="unsureBtn" class="unsure-btn">わからない</button>
+      </div>
+      <div class="test-foot"><span>急がず、見えたままに答えてください</span><span class="eye-dot">● ●</span></div>
+    </section>
+
+    <section id="result" class="screen">
+      <div class="result-top"><span class="eyebrow"><span class="eyebrow-dot"></span> チェック完了</span><div class="result-badge">✓</div></div>
+      <div class="content-narrow result-content">
+        <h2>おつかれさまでした。</h2>
+        <p class="body-copy">今回の簡易チェック結果です。</p>
+        <div class="result-card"><span id="resultEye" class="result-eye">右目の目安</span><div class="result-number"><span id="resultValue">0.8</span><small>くらい</small></div><div class="result-meter"><i id="resultMeter"></i></div><div class="meter-labels"><span>0.1</span><span>1.0</span><span>1.5</span></div></div>
+        <div class="result-note"><span>i</span><p id="resultMessage">測定結果は目安です。見え方には個人差があります。</p></div>
+        <button id="otherEyeBtn" class="primary-btn">左目もチェックする <span>→</span></button>
+        <button id="finishBtn" class="secondary-btn">今日はここまで</button>
+        <button id="restartBtn" class="text-btn">もう一度チェックする</button>
+      </div>
+      <p class="disclaimer">※この結果は医療機器による検査や診断に代わるものではありません。見えにくさや違和感が続く場合は、眼科で検査を受けてください。</p>
+    </section>
+    <footer class="app-footer"><span>みえる？</span><span>おうち視力チェック</span></footer>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

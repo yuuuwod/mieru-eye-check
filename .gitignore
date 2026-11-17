@@ -1,0 +1,41 @@
+# Local credentials and configuration
+.env
+.env.*
+!.env.example
+**/.env.local
+**/*.pem
+**/*.p12
+**/*.mobileprovision
+
+# JavaScript / Expo generated files
+**/node_modules/
+**/.expo/
+**/dist/
+**/web-build/
+**/expo-env.d.ts
+**/*.tsbuildinfo
+**/npm-debug.log*
+**/yarn-debug.log*
+
+# Generated native projects; recreate with Expo prebuild/run commands
+/mobile/ios/
+/mobile/android/
+
+# Python environments and caches
+.venv/
+**/.venv/
+**/__pycache__/
+*.py[cod]
+
+# Large third-party model source and checkpoints (download separately)
+/Depth-Anything-V2/
+*.pth
+*.pt
+
+# Machine-specific/editor files
+.DS_Store
+**/.DS_Store
+/mobile/.claude/
+/mobile/AGENTS.md
+/mobile/LICENSE
+.git-mobile-history-backup/
