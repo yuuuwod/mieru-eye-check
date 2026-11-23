@@ -22,6 +22,21 @@ npx expo run:android
 npx eas-cli build --profile development --platform all
 ```
 
+## iOSプロジェクトをXcodeで開く
+
+`ios/` はGitで共有しています。クローン後、Node.jsとXcodeを用意して次を実行します。
+
+```sh
+cd mobile
+npm ci
+cp .env.example .env.local
+# .env.local にFirebaseとPython APIの設定値を記入
+npx pod-install
+open ios/app.xcworkspace
+```
+
+Xcodeで `app` scheme と実行先を選んで起動します。実機へインストールする場合は、各開発者のXcodeでApple AccountとSigning Teamを設定してください。`Pods/`、ビルド成果物、Xcodeのユーザー別設定はGitに含めず、`Podfile.lock`で依存バージョンを共有します。Expoの設定やネイティブ依存を変更したときは、`npx expo prebuild --platform ios` で `ios/` を更新し、その差分をコミットしてください。
+
 ## カメラ校正
 
 開始すると前面カメラが起動し、顔を安定して検出した時点で校正用静止画をPython APIへ送り、自動で校正します。校正時はスマホを顔から約40cmに持ちます。カメラID別の補正値は端末内に保存します。距離確認中は約1.8秒ごとに低解像度画像をAPIへ送って深度を推定します。API実装は受信画像をメモリ上で処理し、ファイルには保存しません。

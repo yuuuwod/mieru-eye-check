@@ -17,8 +17,7 @@
 **/npm-debug.log*
 **/yarn-debug.log*
 
-# Generated native projects; recreate with Expo prebuild/run commands
-/mobile/ios/
+# Generated native projects; Android remains generated locally.
 /mobile/android/
 
 # Python environments and caches

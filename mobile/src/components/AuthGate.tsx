@@ -37,7 +37,13 @@ function friendlyError(error: unknown) {
   if (code === 'auth/invalid-email') return 'メールアドレスの形式を確認してください。';
   if (code === 'auth/too-many-requests') return '試行回数が多いため、しばらく待ってからお試しください。';
   if (code === 'auth/network-request-failed') return '通信できません。ネットワークを確認してください。';
-  return '処理できませんでした。入力内容と通信を確認して、もう一度お試しください。';
+  if (code === 'auth/operation-not-allowed' || code === 'auth/admin-restricted-operation') return 'Firebase Consoleでメール/パスワード認証が有効か確認してください。';
+  if (code === 'auth/invalid-api-key' || code === 'auth/api-key-not-valid.-please-pass-a-valid-api-key.') return 'FirebaseのAPIキーが正しいか確認してください。';
+  if (code === 'auth/configuration-not-found' || code === 'auth/project-not-found') return 'Firebaseプロジェクトの認証設定を確認してください。';
+  if (code === 'auth/app-not-authorized') return 'Firebaseプロジェクトでこのアプリの設定とAPI制限を確認してください。';
+  const generic = '処理できませんでした。入力内容と通信を確認して、もう一度お試しください。';
+  // Show only Firebase's non-sensitive error code while developing; never expose it in production.
+  return __DEV__ && code ? `${generic}（開発用エラーコード: ${code}）` : generic;
 }
 
 export default function AuthGate({ children }: { children: React.ReactNode }) {
