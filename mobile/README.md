@@ -30,18 +30,20 @@ npx eas-cli build --profile development --platform all
 cd mobile
 npm ci
 cp .env.example .env.local
-# .env.local にFirebaseとPython APIの設定値を記入
+# .env.local にFirebaseの設定値を記入
 npx pod-install
 open ios/app.xcworkspace
 ```
 
 Xcodeで `app` scheme と実行先を選んで起動します。実機へインストールする場合は、各開発者のXcodeでApple AccountとSigning Teamを設定してください。`Pods/`、ビルド成果物、Xcodeのユーザー別設定はGitに含めず、`Podfile.lock`で依存バージョンを共有します。Expoの設定やネイティブ依存を変更したときは、`npx expo prebuild --platform ios` で `ios/` を更新し、その差分をコミットしてください。
 
-## カメラ校正
+## リアルタイム距離測定
 
-開始すると前面カメラが起動し、顔を安定して検出した時点で校正用静止画をPython APIへ送り、自動で校正します。校正時はスマホを顔から約40cmに持ちます。カメラID別の補正値は端末内に保存します。距離確認中は約1.8秒ごとに低解像度画像をAPIへ送って深度を推定します。API実装は受信画像をメモリ上で処理し、ファイルには保存しません。
+検査開始時に校正や250cmの事前確認画面を挟まず、端末上の顔検出枠、前面カメラの焦点距離、平均顔幅14cmの仮定から距離を推定します。推定値の直近3回の中央値に合わせてランドルト環の大きさを更新します。端末を手に持った距離でも検査でき、近づけるほど視標と切れ目が小さくなります。個人差やカメラ仕様を校正しないため距離は目安です。距離が安定して測定できるまでは視標を表示せず、回答を待機します。
 
-Python APIの起動方法と接続設定は [`../depth_service/README.md`](../depth_service/README.md) を参照してください。アプリを使う間はAPIへの接続が必要です。ストア配布時はHTTPSのAPI URLをEASの環境変数 `EXPO_PUBLIC_DEPTH_API_URL` に設定します。
+顔検出と距離推定は端末内で行い、検査中のカメラ画像はPython APIへ送信しません。距離と視標サイズは目安であり、実際の視力検査を代替しません。`depth_service/` のPython APIは独立して試す用途で残しており、モバイルアプリの動作には必要ありません。
+
+Python APIを個別に起動する場合は [`../depth_service/README.md`](../depth_service/README.md) を参照してください。
 
 ## メールアドレス登録とログイン
 
@@ -50,23 +52,23 @@ Python APIの起動方法と接続設定は [`../depth_service/README.md`](../de
 1. [Firebase Console](https://console.firebase.google.com/) でプロジェクトを作成し、Authenticationの「メール/パスワード」プロバイダを有効にします。
 2. Authenticationのパスワードポリシーを「要件を適用」にして、12文字以上、英大文字・英小文字・数字・記号を必須にします。アプリ側でも同じ要件をチェックします。
 3. Authenticationのユーザー操作設定でメール列挙保護（Email enumeration protection）を有効にします。
-4. プロジェクト設定からアプリのFirebase設定値を取得し、`.env.example` を参考に `mobile/.env.local` へ `EXPO_PUBLIC_FIREBASE_API_KEY`、`EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN`、`EXPO_PUBLIC_FIREBASE_PROJECT_ID`、`EXPO_PUBLIC_FIREBASE_APP_ID` を追加します。`.env.local` はGitに登録しないでください。既存の `EXPO_PUBLIC_DEPTH_API_URL` も残します。
+4. プロジェクト設定からアプリのFirebase設定値を取得し、`.env.example` を参考に `mobile/.env.local` へ `EXPO_PUBLIC_FIREBASE_API_KEY`、`EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN`、`EXPO_PUBLIC_FIREBASE_PROJECT_ID`、`EXPO_PUBLIC_FIREBASE_APP_ID` を追加します。`.env.local` はGitに登録しないでください。
 5. 設定後、Metroを再起動して開発ビルドを作り直します。配布ビルドでは同じ値をEASの環境変数に登録してください。
 
 Firebaseのクライアント設定値はアプリに含まれる公開識別子です。サービスアカウントの秘密鍵や管理者認証情報はアプリへ入れないでください。Firebaseプロジェクトの設定がまだない場合、アプリは設定案内を表示し、登録画面へは進みません。
 
 ## 視力の表示段階
 
-ランドルト環を0.1刻みの0.1〜2.0で確認します。各段階は3問中2問正解で通過とし、通過した最高段階を表示します。刻みを細かくしたため、最後まで見分けられる場合は片目あたり最大60問になります。画面サイズ・表示倍率・照明・距離推定に左右される簡易スクリーニングで、眼科の視力検査や処方値ではありません。
+右目から左目の順で検査し、各画面で反対側の目を隠すよう案内します。ランドルト環を0.1刻みの0.1〜2.0で確認します。各段階は最大5問中4問正解で通過とし、通過した最高段階を表示します。最後まで見分けられる場合は片目あたり最大100問になります。端末を手に持ったまま検査でき、顔幅から距離を端末上で自動推定して、距離が近いほどランドルト環と切れ目を小さく表示します（測定距離に下限は設けず、上限は600cmです）。画面のピクセル倍率と標準的な画面密度からも表示サイズを自動推定しますが、機種・顔立ち・照明による誤差があるため、結果は簡易スクリーニングの目安であり、眼科の視力検査や処方値ではありません。距離を測れない場合は視力値を確定しません。
 
 将来のコンタクトレンズ案内では、この結果だけからレンズの種類や度数を推薦しないでください。コンタクトレンズは眼科で目の状態、レンズのカーブや装用状態を確認して選ぶ必要があります。
 
-10円玉を使う画面校正はありません。視標の表示サイズは標準値を使うため、端末ごとの実寸校正を行う専用検査と比べて結果は目安です。ストア提出前にはカメラ校正と250cm判定を実機で確認してください。
+10円玉を使う画面校正はありません。視標の表示サイズは標準値を使うため、端末ごとの実寸校正を行う専用検査と比べて結果は目安です。ストア提出前には距離に応じた視標サイズの更新を実機で確認してください。
 
 ## ストア提出前
 
 - `app.json` の bundle identifier / package name を、配布者のストアアカウントに登録できる値へ確認してください。
-- 実機でiOS・Androidのカメラ権限、カメラごとの校正、250cm検出を確認してください。
+- 実機でiOS・Androidのカメラ権限、リアルタイム距離推定、距離に応じた視標サイズの更新を確認してください。
 - ストア用のアイコン、スクリーンショット、プライバシーポリシーを用意してください。
 - [`PRIVACY.md`](./PRIVACY.md) は公開前の確認用ドラフトです。運営者と実際のホスティング条件を追記して公開してください。
 - Apple Developer / Google Play Console のアカウントを設定し、EAS Build / Submit に接続してください。

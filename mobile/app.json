@@ -12,7 +12,7 @@
       "deploymentTarget": "16.4",
       "supportsTablet": false,
       "infoPlist": {
-        "NSCameraUsageDescription": "視力チェックの顔検出と距離確認に使用します。低解像度画像は距離推定のため設定済みPythonサーバーへ送信され、サーバーには保存されません。"
+        "NSCameraUsageDescription": "視力チェック中に前面カメラで顔を検出し、距離を推定するために使用します。画像は端末内で処理され、外部へ送信しません。"
       }
     },
     "android": {

@@ -56,7 +56,7 @@
 		<string>_expo._tcp</string>
 	</array>
 	<key>NSCameraUsageDescription</key>
-	<string>視力チェックの顔検出と距離確認に使用します。低解像度画像は距離推定のため設定済みPythonサーバーへ送信され、サーバーには保存されません。</string>
+	<string>視力チェック中に前面カメラで顔を検出し、距離を推定するために使用します。画像は端末内で処理され、外部へ送信しません。</string>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Expo Dev Launcher uses the local network to discover and connect to development servers running on your computer.</string>
 	<key>NSUserActivityTypes</key>
